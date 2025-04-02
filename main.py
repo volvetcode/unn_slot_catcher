@@ -16,7 +16,6 @@ CHAT_ID = os.getenv("CHAT_ID")
 CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH")
 PSYCHOLOGIST_NAME = os.getenv("PSYCHOLOGIST_NAME")
 
-
 def main():
     service = Service(executable_path=CHROMEDRIVER_PATH)
     driver = webdriver.Chrome(service=service)
@@ -31,16 +30,15 @@ def main():
         time.sleep(1)
         next_week_button = driver.find_element(By.CLASS_NAME, "week-next")
         next_week_button.click()
-
+        
+        time.sleep(1)
         try:
-            driver.find_element(By.XPATH, "//mat-card[div[text()=PSYCHOLOGIST_NAME]]")
+            driver.find_element(By.XPATH, "//mat-card[div[text()='Подшибихина Светлана Викторовна']]")
             bot.send_message(CHAT_ID, f"Слот появился!")
             break
         except:
             driver.refresh()
-
-        break
-
+    
     driver.quit()
 
 
