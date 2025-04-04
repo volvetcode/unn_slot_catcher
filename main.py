@@ -17,8 +17,13 @@ CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH")
 PSYCHOLOGIST_NAME = os.getenv("PSYCHOLOGIST_NAME")
 
 def main():
+    options = webdriver.ChromeOptions()
+    options.headless = True
     service = Service(executable_path=CHROMEDRIVER_PATH)
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome( \
+        options=options, \
+        service=service
+    )
 
     driver.get("https://psys.unn.ru/home")
     driver.find_element(By.ID, "mat-input-0").send_keys(LOGIN)
@@ -39,6 +44,7 @@ def main():
         except:
             driver.refresh()
     
+    driver.close()
     driver.quit()
 
 
