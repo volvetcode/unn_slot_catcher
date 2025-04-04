@@ -37,25 +37,30 @@ def main():
 
     print("Looking for a slot...")
     start_time = time.time()
+    last_10 = 0
     while True:
         time.sleep(1)
         time_passed = time.time() - start_time
+        current = time_passed // 600
+        if current > last_10:
+            print(f"It's been {current} minutes")
+            last_10 = current
+
         next_week_button = driver.find_element(By.CLASS_NAME, "week-next")
         next_week_button.click()
-        
-        if time_passed * 60 * 60 % 10 == 0:
-            print("Its been 10 minutes")
-            
+
         time.sleep(1)
         try:
             driver.find_element(By.XPATH, "//mat-card[div[text()='Подшибихина Светлана Викторовна']]")
+            print("Slot found!")
             bot.send_message(CHAT_ID, f"Слот появился!")
             break
         except:
             driver.refresh()
         
-        if time_passed > 60 * 60 * 24:
-            bot.send_message(CHAT_ID, f"Слот не появился за 24 часа.")
+        if time_passed > 60 * 60 * 6:
+            print("It's been 6 hours, stopping the script.")
+            bot.send_message(CHAT_ID, f"Слот не появился за 6 часов.")
             break
         
     
