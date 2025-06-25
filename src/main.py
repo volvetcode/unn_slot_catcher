@@ -21,7 +21,7 @@ def main():
                 bot.make_report(psych)
                 return 0
             bot.refresh()
-            # bot.next_page()
+            bot.next_page()
 
         CatcherReport().send_msg("Не нашел слот")
 
