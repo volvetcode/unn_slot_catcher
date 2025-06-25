@@ -30,6 +30,14 @@ logger.handlers = [file_handler, stream_handler]
 class Catcher(webdriver.Chrome):
     def __init__(self, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
         logging.info("setting up")
+        # i don't know why but it did work a couple of times without a webdriver
+        # better be safe than sorry
+        if os.path.exists(driver_path):
+            logging.info(f'found ChromeDriver')
+        else:
+            logging.critical(f"ChromeDriver not found at {driver_path}")
+            raise FileNotFoundError(f"ChromeDriver not found at {driver_path}")
+        
         self.driver_path = driver_path
         os.environ["PATH"] += driver_path
         self.teardown = teardown
@@ -72,13 +80,17 @@ class Catcher(webdriver.Chrome):
             self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
             self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
             logging.info("logged in")
-        except:
-            logging.error("couldn't log in")
+        except Exception as e:
+            logging.critical(f"couldn't log in or connect: {e}")
 
     def next_page(self):
         # WebDriverWait(self, 30).until()
-        next_week_button = self.find_element(By.CLASS_NAME, "week-next")
-        next_week_button.click()
+        try:
+            next_week_button = self.find_element(By.CLASS_NAME, "week-next")
+            next_week_button.click()
+        except:
+            logging.critical("couldn't find the next page button")
+            raise Exception("couldn't find the next page button")
 
     # no need to define refresh.
     # self.refresh() will work fine
@@ -93,9 +105,16 @@ class Catcher(webdriver.Chrome):
         except:
             return False
 
-    def make_report(self, psych):
-        report = CatcherReport()
-        report.send_msg(f"{psych} открыла слот. Бегом записываться!")
+    def make_report(self, psych, found_slot=False):
+        try:
+            report = CatcherReport()
+            if found_slot:
+                msg = f"{psych} открыла слот. Бегом записываться!"
+            else:
+                msg = f"{psych} не открыла слот"
+            report.send_msg(msg)
+        except:
+            logging.error("couldn't make a report")
 
     # future functionality not sure if i will make it
     # def search_for_psychologists(self):

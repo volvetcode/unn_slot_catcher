@@ -8,7 +8,9 @@ LOGIN = os.getenv("LOGIN")
 PASSWORD = os.getenv("PASSWORD")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
-CHROMEDRIVER_PATH = "../drivers/chromedriver"
+CHROMEDRIVER_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../drivers/chromedriver")
+)
 PSYCHOLOGISTS = [
     "Подшибихина Светлана Викторовна",
     "Галстян Полина Амаяковна",
