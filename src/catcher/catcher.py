@@ -33,11 +33,11 @@ class Catcher(webdriver.Chrome):
         # i don't know why but it did work a couple of times without a webdriver
         # better be safe than sorry
         if os.path.exists(driver_path):
-            logging.info(f'found ChromeDriver')
+            logging.info(f"found ChromeDriver")
         else:
             logging.critical(f"ChromeDriver not found at {driver_path}")
             raise FileNotFoundError(f"ChromeDriver not found at {driver_path}")
-        
+
         self.driver_path = driver_path
         os.environ["PATH"] += driver_path
         self.teardown = teardown

@@ -30,8 +30,9 @@ def main():
             bot.make_report(psych, found_slot=found_slot)
         else:
             bot.make_report(psych, found_slot=found_slot)
-            logging.warning(f"couldn't find a psych in {target_time / 60 / 60:.2f}hours")
-
+            logging.warning(
+                f"couldn't find a psych in {target_time / 60 / 60:.2f}hours"
+            )
 
 
 if __name__ == "__main__":
