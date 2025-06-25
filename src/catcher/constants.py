@@ -11,6 +11,9 @@ CHAT_ID = os.getenv("CHAT_ID")
 CHROMEDRIVER_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../drivers/chromedriver")
 )
+LOG_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../logs/catcher.log")
+)
 PSYCHOLOGISTS = [
     "Подшибихина Светлана Викторовна",
     "Галстян Полина Амаяковна",
