@@ -1,0 +1,5 @@
+# the name of the file is supposed to be .env
+LOGIN = "unn_login"
+PASSWORD = "unn_account_password"
+TELEGRAM_TOKEN = 'your_cool_telegram_token'
+CHAT_ID = "your_chat_id"
