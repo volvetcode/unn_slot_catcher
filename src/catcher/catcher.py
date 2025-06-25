@@ -14,7 +14,7 @@ from catcher.catcher_report import CatcherReport
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-file_handler = logging.FileHandler("catcher.log", mode="w")
+file_handler = logging.FileHandler(const.LOG_PATH, mode="w")
 file_handler.setFormatter(
     logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 )
