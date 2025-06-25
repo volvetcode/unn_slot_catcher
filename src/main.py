@@ -23,7 +23,7 @@ def main():
             bot.refresh()
             bot.next_page()
 
-        CatcherReport().send_msg("Не нашел слот")
+        bot.send_msg("Не нашел слот")
 
 
 if __name__ == "__main__":
