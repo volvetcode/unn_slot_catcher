@@ -66,9 +66,9 @@ class Catcher(webdriver.Chrome):
         except:
             return False
 
-    def make_report(self):
+    def make_report(self, psych):
         report = CatcherReport()
-        report.send_msg("Нашел слот с Подшибихиной")
+        report.send_msg(f"{psych} открыла слот. Бегом записываться!")
 
     # future functionality not sure if i will make it
     # def search_for_psychologists(self):

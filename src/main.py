@@ -18,10 +18,10 @@ def main():
         psych = const.PSYCHOLOGISTS[0]
         while (time.time() - time_start) < target_time:
             if bot.search_for_a_slot(psych):
-                CatcherReport().send_msg("Нашел слот")
+                bot.make_report(psych)
                 return 0
             bot.refresh()
-            bot.next_page()
+            # bot.next_page()
 
         CatcherReport().send_msg("Не нашел слот")
 
