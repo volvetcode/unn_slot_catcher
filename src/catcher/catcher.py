@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 
 import requests
 from selenium import webdriver
@@ -9,9 +11,25 @@ from catcher.catcher_report import CatcherReport
 
 # from selenium.webdriver.support.ui import WebDriverWait
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler("catcher.log", mode="w")
+file_handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+)
+
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+)
+
+logger.handlers = [file_handler, stream_handler]
+
 
 class Catcher(webdriver.Chrome):
     def __init__(self, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
+        logging.info("setting up")
         self.driver_path = driver_path
         os.environ["PATH"] += driver_path
         self.teardown = teardown
@@ -25,29 +43,37 @@ class Catcher(webdriver.Chrome):
         options.add_argument("Accept-Language='en-GB,en;q=0.9'")
 
         if self.teardown == True:
+            logging.info("running in production mode")
             options.add_argument("--headless")
             options.add_argument("--no-sandbox")
         else:
             # detach is used for the chrome window to stay open.
             # doesnt work without __exit__ func
+            logging.info("running in debug mode")
             options.add_experimental_option("detach", True)
         # suppresses unnecessary logging messages from ChromeDriver
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
         super().__init__(options=options)
         self.implicitly_wait(15)
+        logging.info("finished setting up")
 
     # works hand to hand with detach.
     # important. don't remove
     def __exit__(self, exc_type, exc, traceback):
+        logging.info("quitting")
         if self.teardown:
             self.quit()
 
     def login(self):
-        self.get(const.BASE_URL)
-        self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
-        self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
-        self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
+        try:
+            self.get(const.BASE_URL)
+            self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
+            self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
+            self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
+            logging.info("logged in")
+        except:
+            logging.error("couldn't log in")
 
     def next_page(self):
         # WebDriverWait(self, 30).until()
@@ -62,6 +88,7 @@ class Catcher(webdriver.Chrome):
             slot = self.find_element(
                 By.XPATH, f"//div[normalize-space(text())='{psychologist}']"
             )
+            logging.info(f"found {psychologist}")
             return True
         except:
             return False
