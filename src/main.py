@@ -13,7 +13,7 @@ def main():
         bot.login()
         bot.next_page()
 
-        # 6 hours. 60sec * 60mins * 6hours
+        # 6 hours. 60sec * 60mins * 8hours
         target_time = 60 * 60 * 8
         time_start = time.time()
 
