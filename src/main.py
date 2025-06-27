@@ -32,8 +32,11 @@ def main():
             else:
                 bot.make_report(psych, found_slot=found_slot)
                 logging.warning(
-                    f"couldn't find a psychologist in {target_time / 60 / 60:.2f}hours"
+                    f"couldn't find a psychologist"
                 )
+
+            total_time = (time.time() - time_start) / 60
+            logging.info(f"Statistics: runtime={total_time}mins")
     except Exception as e:
         print(e)
 

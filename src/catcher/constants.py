@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from datetime import date
 
 load_dotenv()
 BASE_URL = "https://psys.unn.ru/home"
@@ -12,7 +13,7 @@ CHROMEDRIVER_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../drivers/chromedriver")
 )
 LOG_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../logs/catcher.log")
+    os.path.join(os.path.dirname(__file__), f"../../logs/{date.today()}.log")
 )
 PSYCHOLOGISTS = [
     "Подшибихина Светлана Викторовна",
