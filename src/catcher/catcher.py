@@ -70,6 +70,8 @@ class Catcher(webdriver.Chrome):
         super().__init__(options=options)
         self.implicitly_wait(15)
         self.parse_args(sys.argv)
+        # hours to seconds
+        self.target_time = 60 * 60 * self.duration_hours
         logging.info("finished setting up")
 
     # works hand to hand with detach.

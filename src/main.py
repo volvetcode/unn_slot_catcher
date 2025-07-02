@@ -15,12 +15,9 @@ def main():
             bot.login()
             bot.next_page()
 
-            # hours to seconds
-            target_time = 60 * 60 * bot.duration_hours
-            time_start = time.time()
-
             found_slot = False
-            while (time.time() - time_start) < target_time:
+            time_start = time.time()
+            while (time.time() - time_start) < bot.target_time:
                 if bot.search_for_a_slot(bot.psych):
                     found_slot = True
                     break
