@@ -10,7 +10,7 @@ from catcher.catcher_report import CatcherReport
 
 def main(argv):
     duration_hours = 8
-    psychologist_index = 0
+    psych_index = 0
 
     n_argv = len(argv)
     if n_argv < 4:
@@ -30,7 +30,7 @@ def main(argv):
         logging.warning("too many arguments. running in default mode")
 
     logging.info(f'the script will run for {duration_hours} hours')
-    logging.info(f'we are looking for {const.PSYCHOLOGISTS[psych_index]}')
+    logging.info(f'the script will look for {const.PSYCHOLOGISTS[psych_index]}')
 
     try:
         # teardown=False = debug mode
@@ -43,7 +43,7 @@ def main(argv):
             time_start = time.time()
 
             found_slot = False
-            psych = const.PSYCHOLOGISTS[psychologist_index]
+            psych = const.PSYCHOLOGISTS[psych_index]
             while (time.time() - time_start) < target_time:
                 if bot.search_for_a_slot(psych):
                     found_slot = True
