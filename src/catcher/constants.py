@@ -1,7 +1,7 @@
 import os
+from datetime import date
 
 from dotenv import load_dotenv
-from datetime import date
 
 load_dotenv()
 BASE_URL = "https://psys.unn.ru/home"

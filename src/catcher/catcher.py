@@ -4,8 +4,8 @@ import sys
 
 import requests
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 import catcher.constants as const
 from catcher.catcher_report import CatcherReport
@@ -43,8 +43,11 @@ class Catcher(webdriver.Chrome):
         os.environ["PATH"] += driver_path
         self.teardown = teardown
 
-        self.psychologists = {name: False for name in const.PSYCHOLOGISTS}
+        self.psychologists = const.PSYCHOLOGISTS
         self.retries = 3
+        self.duration_hours = 8
+        self.psych_index = 0
+        self.psych = self.psychologists[self.psych_index]
 
         options = webdriver.ChromeOptions()
         options.add_argument(
@@ -66,6 +69,9 @@ class Catcher(webdriver.Chrome):
 
         super().__init__(options=options)
         self.implicitly_wait(15)
+        self.parse_args(sys.argv)
+        # hours to seconds
+        self.target_time = 60 * 60 * self.duration_hours
         logging.info("finished setting up")
 
     # works hand to hand with detach.
@@ -75,6 +81,30 @@ class Catcher(webdriver.Chrome):
         if self.teardown:
             self.quit()
             return
+
+    def parse_args(self, argv):
+        n_argv = len(argv)
+        if n_argv < 4:
+            if n_argv > 1:
+                try:
+                    self.duration_hours = float(argv[1])
+                except:
+                    logging.warning("invalid duration, using default 8 hours")
+
+            if n_argv > 2:
+                try:
+                    self.psych_index = int(argv[2])
+                    self.psych = self.psychologists[self.psych_index]
+                except:
+                    logging.warning(
+                        "invalid psychologist, we will look for psychologist №0"
+                    )
+
+        else:
+            logging.warning("too many arguments. running in default mode")
+
+        logging.info(f"the script will run for {self.duration_hours} hours")
+        logging.info(f"the script will look for {self.psychologists[self.psych_index]}")
 
     def login(self):
         logging.info("logging in...")
@@ -93,7 +123,7 @@ class Catcher(webdriver.Chrome):
             except Exception as e:
                 logging.critical(f"Unexpected error: {e}")
                 raise Exception(f"Unexpected error: {e}")
-        
+
         if flag:
             logging.critical("Couldn't login")
             raise Exception("Couldn't login")
@@ -113,7 +143,7 @@ class Catcher(webdriver.Chrome):
             except Exception as e:
                 logging.critical(f"Unexpected error: {e}")
                 raise Exception(f"Unexpected error: {e}")
-                
+
         if flag:
             logging.critical("Couldn't go to the next page")
             raise Exception("Couldn't go to the next page")
@@ -122,7 +152,7 @@ class Catcher(webdriver.Chrome):
     # self.refresh() will work fine
 
     def search_for_a_slot(self, psychologist):
-        logging.info(f'searching for {psychologist}')
+        logging.info(f"searching for {psychologist}")
         try:
             slot = self.find_element(
                 By.XPATH, f"//div[normalize-space(text())='{psychologist}']"
@@ -133,7 +163,9 @@ class Catcher(webdriver.Chrome):
             logging.info(f"didn't find {psychologist}")
             return False
         except Exception as e:
-            logging.error(f"Unexpected error searching for {psychologist}: {e}", exc_info=True)
+            logging.error(
+                f"Unexpected error searching for {psychologist}: {e}", exc_info=True
+            )
             return False
 
     def make_report(self, psych, found_slot=False):
