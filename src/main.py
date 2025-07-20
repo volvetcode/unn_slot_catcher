@@ -28,7 +28,6 @@ def main():
                     found_slot = True
                     break
 
-
             bot.make_report(bot.psych, found_slot=found_slot)
 
             total_time = (time.time() - time_start) / 60
