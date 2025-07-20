@@ -175,6 +175,8 @@ class Catcher(webdriver.Chrome):
                 msg = f"{psych} открыла слот. Бегом записываться!"
             else:
                 msg = f"{psych} не открыла слот"
+                logging.warning(f"couldn't find a psychologist")
+                
             report.send_msg(msg)
         except:
             logging.error("couldn't make a report")

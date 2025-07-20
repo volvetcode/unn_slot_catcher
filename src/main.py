@@ -11,24 +11,25 @@ from catcher.catcher_report import CatcherReport
 def main():
     try:
         # teardown=False = debug mode
-        with Catcher(teardown=True) as bot:
+        with Catcher(teardown=False) as bot:
             bot.login()
-            bot.next_page()
 
             found_slot = False
             time_start = time.time()
+
             while (time.time() - time_start) < bot.target_time:
+                try:
+                    bot.refresh()
+                    bot.next_page()
+                except:
+                    break
+
                 if bot.search_for_a_slot(bot.psych):
                     found_slot = True
                     break
-                bot.refresh()
-                bot.next_page()
 
-            if found_slot:
-                bot.make_report(bot.psych, found_slot=found_slot)
-            else:
-                bot.make_report(bot.psych, found_slot=found_slot)
-                logging.warning(f"couldn't find a psychologist")
+
+            bot.make_report(bot.psych, found_slot=found_slot)
 
             total_time = (time.time() - time_start) / 60
             logging.info(f"Statistics: runtime={total_time:.0f}mins")
