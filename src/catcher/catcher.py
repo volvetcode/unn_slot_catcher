@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from time import sleep
 
 import requests
 from selenium import webdriver
@@ -17,12 +18,12 @@ logger.setLevel(logging.INFO)
 
 file_handler = logging.FileHandler(const.LOG_PATH, mode="w")
 file_handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    logging.Formatter('"%(asctime)s","%(levelname)s","%(message)s"')
 )
 
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    logging.Formatter('"%(asctime)s","%(levelname)s","%(message)s"')
 )
 
 logger.handlers = [file_handler, stream_handler]
@@ -67,6 +68,12 @@ class Catcher(webdriver.Chrome):
         # suppresses unnecessary logging messages from ChromeDriver
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
+        options.add_argument("--disable-extensions")
+        options.add_argument("--disable-application-cache")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-setuid-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+
         super().__init__(options=options)
         self.implicitly_wait(15)
         self.parse_args(sys.argv)
@@ -108,23 +115,30 @@ class Catcher(webdriver.Chrome):
 
     def login(self):
         logging.info("logging in...")
-        flag = 1
         for attempt in range(1, self.retries + 1):
+            attempt_counter = attempt
             try:
                 self.get(const.BASE_URL)
                 self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
                 self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
+                sleep(2)
                 self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
-                logging.info("logged in")
-                flag = 0
-                break
+                sleep(2)
+                try:
+                    # we can still find the ВОЙТИ button even though there is 
+                    self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]")       
+                except:
+                    logging.info(f"logged in on attempt №{attempt}")
+                    break
+            
+
             except NoSuchElementException:
                 logging.warning(f"failed to login. attempt№{attempt}")
             except Exception as e:
                 logging.critical(f"Unexpected error: {e}")
                 raise Exception(f"Unexpected error: {e}")
 
-        if flag:
+        if attempt_counter == 3:
             logging.critical("Couldn't login")
             raise Exception("Couldn't login")
 

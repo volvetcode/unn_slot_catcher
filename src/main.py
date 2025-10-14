@@ -20,7 +20,13 @@ def main():
             while (time.time() - time_start) < bot.target_time:
                 try:
                     bot.refresh()
-                    bot.next_page()
+                    try:
+                        bot.next_page()
+                    except:
+                        try:
+                            bot.login()
+                        except:
+                            break 
                 except:
                     break
 
@@ -31,7 +37,7 @@ def main():
             bot.make_report(bot.psych, found_slot=found_slot)
 
             total_time = (time.time() - time_start) / 60
-            logging.info(f"Statistics: runtime={total_time:.0f}mins")
+            logging.info(f"Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {bot.psych}")
 
     except Exception as e:
         print(e)
