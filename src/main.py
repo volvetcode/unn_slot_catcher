@@ -20,7 +20,13 @@ def main():
             while (time.time() - time_start) < bot.target_time:
                 try:
                     bot.refresh()
-                    bot.next_page()
+                    try:
+                        bot.next_page()
+                    except:
+                        try:
+                            bot.login()
+                        except:
+                            break 
                 except:
                     break
 
