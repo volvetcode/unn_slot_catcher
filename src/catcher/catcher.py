@@ -108,25 +108,28 @@ class Catcher(webdriver.Chrome):
 
     def login(self):
         logging.info("logging in...")
-        flag = 1
         for attempt in range(1, self.retries + 1):
             try:
                 self.get(const.BASE_URL)
                 self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
                 self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
                 self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
-                logging.info("logged in")
-                flag = 0
-                break
+                try:
+                    # we can still find the ВОЙТИ button even though there is 
+                    self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]")       
+                except:
+                    logging.info("logged in")
+                    break
+
             except NoSuchElementException:
                 logging.warning(f"failed to login. attempt№{attempt}")
             except Exception as e:
                 logging.critical(f"Unexpected error: {e}")
                 raise Exception(f"Unexpected error: {e}")
 
-        if flag:
-            logging.critical("Couldn't login")
-            raise Exception("Couldn't login")
+        # if attempt_counter == 3:
+        #     logging.critical("Couldn't login")
+        #     raise Exception("Couldn't login")
 
     def next_page(self):
         # WebDriverWait(self, 30).until()
