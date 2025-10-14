@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from time import sleep
 
 import requests
 from selenium import webdriver
@@ -17,12 +18,12 @@ logger.setLevel(logging.INFO)
 
 file_handler = logging.FileHandler(const.LOG_PATH, mode="w")
 file_handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    logging.Formatter('"%(asctime)s","%(levelname)s","%(message)s"')
 )
 
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    logging.Formatter('"%(asctime)s","%(levelname)s","%(message)s"')
 )
 
 logger.handlers = [file_handler, stream_handler]
@@ -109,17 +110,21 @@ class Catcher(webdriver.Chrome):
     def login(self):
         logging.info("logging in...")
         for attempt in range(1, self.retries + 1):
+            attempt_counter = attempt
             try:
                 self.get(const.BASE_URL)
                 self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
                 self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
+                sleep(2)
                 self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
+                sleep(2)
                 try:
                     # we can still find the ВОЙТИ button even though there is 
                     self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]")       
                 except:
-                    logging.info("logged in")
+                    logging.info(f"logged in on attempt №{attempt}")
                     break
+            
 
             except NoSuchElementException:
                 logging.warning(f"failed to login. attempt№{attempt}")
@@ -127,9 +132,9 @@ class Catcher(webdriver.Chrome):
                 logging.critical(f"Unexpected error: {e}")
                 raise Exception(f"Unexpected error: {e}")
 
-        # if attempt_counter == 3:
-        #     logging.critical("Couldn't login")
-        #     raise Exception("Couldn't login")
+        if attempt_counter == 3:
+            logging.critical("Couldn't login")
+            raise Exception("Couldn't login")
 
     def next_page(self):
         # WebDriverWait(self, 30).until()
