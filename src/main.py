@@ -11,7 +11,7 @@ from catcher.catcher_report import CatcherReport
 def main():
     try:
         # teardown=False = debug mode
-        with Catcher(teardown=False) as bot:
+        with Catcher(teardown=True) as bot:
             bot.login()
 
             found_slot = False
