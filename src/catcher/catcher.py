@@ -69,13 +69,14 @@ class Catcher(webdriver.Chrome):
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
         options.add_argument("--disable-extensions")
+        options.add_argument('--avoid-stats') # avoid sending data to plausible
         options.add_argument("--disable-application-cache")
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-setuid-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
         super().__init__(options=options)
-        self.implicitly_wait(15)
+        self.implicitly_wait(15)    
         self.parse_args(sys.argv)
         # hours to seconds
         self.target_time = 60 * 60 * self.duration_hours
