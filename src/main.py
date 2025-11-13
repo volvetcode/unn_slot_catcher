@@ -25,8 +25,9 @@ def main():
                     except:
                         try:
                             bot.login()
+                            continue
                         except:
-                            break 
+                            break
                 except:
                     break
 
@@ -37,7 +38,9 @@ def main():
             bot.make_report(bot.psych, found_slot=found_slot)
 
             total_time = (time.time() - time_start) / 60
-            logging.info(f"Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {bot.psych}")
+            logging.info(
+                f"Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {bot.psych}"
+            )
 
     except Exception as e:
         print(e)
