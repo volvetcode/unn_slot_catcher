@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import logging
 import sys
+import logging
 
-from catcher.catcher import Catcher
+from catcher import Catcher
 
 
 def main():
