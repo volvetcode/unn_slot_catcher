@@ -1,0 +1,19 @@
+[project]
+name = "unn-slot-catcher"
+version = "0.1.0"
+description = "A simple bot that helps to get a slot with a psychologist at Lobachevsky University"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Savely Antonov", email = "savelytest@yandex.ru" }]
+license = { file = "LICENSE" }
+dependencies = [
+    "dotenv>=0.9.9",
+    "pytest>=9.0.3",
+    "requests>=2.34.2",
+    "selenium>=4.44.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.13",
+]

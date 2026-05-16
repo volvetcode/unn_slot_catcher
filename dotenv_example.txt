@@ -2,4 +2,4 @@
 LOGIN = "unn_login"
 PASSWORD = "unn_account_password"
 TELEGRAM_TOKEN = 'your_cool_telegram_token'
-CHAT_ID = "your_chat_id"
+CHAT_ID = "your_telegram_chat_id"

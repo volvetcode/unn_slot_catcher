@@ -1,7 +1,8 @@
 import logging
 import os
 import sys
-from time import sleep
+from time import sleep, time
+import pytest
 
 import requests
 from selenium import webdriver
@@ -115,32 +116,53 @@ class Catcher(webdriver.Chrome):
         logging.info(f"the script will look for {self.psychologists[self.psych_index]}")
 
     def login(self):
-        logging.info("logging in...")
+        """
+        Authenticate user with retry logic.
+        
+        Has a 60 second delay in between retries.
+        We need that because the website goes down when
+        psychologists update the slots 
+
+        Raises:
+            Exception: if login fails after all retry attempts
+                or an unexpected error occurs 
+        """
+        logging.info("Logging in...")
+        
         for attempt in range(1, self.retries + 1):
-            attempt_counter = attempt
             try:
-                self.get(const.BASE_URL)
-                self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
-                self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
-                sleep(2)
-                self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
-                sleep(2)
-                try:
-                    # we can still find the ВОЙТИ button even though there is
-                    self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]")
-                except:
-                    logging.info(f"logged in on attempt №{attempt}")
-                    break
-
+                self._attempt_login()
+                logging.info(f"Logged in successfully on attempt №{attempt}")
+                return
             except NoSuchElementException:
-                logging.warning(f"failed to login. attempt№{attempt}")
+                logging.warning(f"Failed to login. Attempt №{attempt}")
+                sleep(60)
             except Exception as e:
-                logging.critical(f"Unexpected error: {e}")
+                logging.critical(f"Unexpected error on attempt №{attempt}: {e}")
                 raise Exception(f"Unexpected error: {e}")
+        
+        logging.critical("Could not login after all retries")
+        raise Exception("Couldn't login")
 
-        if attempt_counter == 3:
-            logging.critical("Couldn't login")
-            raise Exception("Couldn't login")
+    def _attempt_login(self):
+        """
+        Execute a single login attempt.
+
+        Open the website, fill in the credentials,
+        Try to press the login button.
+
+        Verifies if we logged in with pytest
+        """
+        self.get(const.BASE_URL)
+        self.find_element(By.ID, "mat-input-0").send_keys(const.LOGIN)
+        self.find_element(By.ID, "mat-input-1").send_keys(const.PASSWORD)
+        sleep(2)
+        self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
+        sleep(2)
+        
+        # Verify login success by checking that the login button is gone
+        with pytest.raises(NoSuchElementException):
+            self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]")
 
     def next_page(self):
         # WebDriverWait(self, 30).until()
@@ -195,6 +217,38 @@ class Catcher(webdriver.Chrome):
         except:
             logging.error("couldn't make a report")
 
+    def monitor(self):
+        """Main monitoring loop - handles login, searching, and reporting"""
+        self.login()
+        
+        found_slot = False
+        time_start = time()
+        
+        while (time() - time_start) < self.target_time:
+            try:
+                self.refresh()
+                try:
+                    self.next_page()
+                except Exception:
+                    # If next_page fails, try to re-login and continue
+                    try:
+                        self.login()
+                        continue
+                    except Exception:
+                        break
+            except Exception:
+                break
+            
+            if self.search_for_a_slot(self.psych):
+                found_slot = True
+                break
+        
+        self.make_report(self.psych, found_slot=found_slot)
+        
+        total_time = (time() - time_start) / 60
+        logging.info(
+            f"Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {self.psych}"
+        )
     # future functionality not sure if i will make it
     # def search_for_psychologists(self):
     #     for psych in self.psychologists:

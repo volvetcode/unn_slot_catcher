@@ -173,6 +173,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-chromedriver
-
+# OS
 .DS_Store
+
+# Browser Driver
+chromedriver
