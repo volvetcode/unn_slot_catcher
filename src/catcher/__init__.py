@@ -1,8 +1,9 @@
 from .catcher import Catcher
-from .catcher_report import CatcherReport
+from .notifier import Notifier, TelegramNotifier
 from .constants import *
 
 __all__ = [
     "Catcher",
-    "CatcherReport",
+    "Notifier",
+    "TelegramNotifier"
 ]

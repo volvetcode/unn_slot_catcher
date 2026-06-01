@@ -4,13 +4,12 @@ import sys
 from time import sleep, time
 import pytest
 
-import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 import catcher.constants as const
-from catcher.catcher_report import CatcherReport
+from catcher.notifier import Notifier, TelegramNotifier
 
 # from selenium.webdriver.support.ui import WebDriverWait
 
@@ -31,7 +30,9 @@ logger.handlers = [file_handler, stream_handler]
 
 
 class Catcher(webdriver.Chrome):
-    def __init__(self, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
+    def __init__(self, notifier: Notifier, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
+        self.notifier = notifier
+
         logging.info("setting up...")
         # i don't know why but it did work a couple of times without a webdriver
         # better be safe than sorry
@@ -206,16 +207,15 @@ class Catcher(webdriver.Chrome):
 
     def make_report(self, psych, found_slot=False):
         try:
-            report = CatcherReport()
             if found_slot:
                 msg = f"{psych} открыла слот. Бегом записываться!"
             else:
                 msg = f"{psych} не открыла слот"
-                logging.warning(f"couldn't find a psychologist")
+                logging.warning("couldn't find a psychologist")
 
-            report.send_msg(msg)
-        except:
-            logging.error("couldn't make a report")
+            self.notifier.send(msg)
+        except Exception as exc:
+            logging.error(f"couldn't make a report. Error: {exc}")
 
     def monitor(self):
         """Main monitoring loop - handles login, searching, and reporting"""
@@ -249,13 +249,3 @@ class Catcher(webdriver.Chrome):
         logging.info(
             f"Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {self.psych}"
         )
-    # future functionality not sure if i will make it
-    # def search_for_psychologists(self):
-    #     for psych in self.psychologists:
-    #         if self.psychologists[psych] == False:
-    #             self.psychologists[psych] = \
-    #                 self.search_for_a_slot(psych)
-
-    # def make_report(self):
-    #     report = CatcherReport(self.psychologists)
-    #     report.send_msg(report.report_results())
