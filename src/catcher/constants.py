@@ -4,7 +4,7 @@ from datetime import date
 from dotenv import load_dotenv
 
 load_dotenv()
-BASE_URL = "https://psys.unn.ru/home"
+BASE_URL = "https://psys.unn.ru/login"
 LOGIN = os.getenv("LOGIN")
 PASSWORD = os.getenv("PASSWORD")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
