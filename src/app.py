@@ -7,9 +7,9 @@ from catcher.notifier import TelegramNotifier
 import catcher.constants as const
 
 
-def main():
+def main() -> None:
     notifier = TelegramNotifier(token=const.TELEGRAM_TOKEN, chat_id=const.CHAT_ID)
-    
+
     try:
         with Catcher(notifier=notifier, teardown=True) as bot:
             bot.monitor()

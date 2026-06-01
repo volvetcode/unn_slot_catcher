@@ -6,6 +6,7 @@ from typing import Optional
 import requests
 from requests import Session
 
+
 class Notifier(ABC):
     """Protocol for Notifiers that can send messages"""
 
@@ -14,15 +15,16 @@ class Notifier(ABC):
         """Send a text message through the notifier"""
         pass
 
+
 class TelegramNotifier(Notifier):
     """Send notifications via Telegram bot."""
 
     def __init__(
         self,
         token: Optional[str] = None,
-        chat_id: Optional[int] = None,
+        chat_id: Optional[str] = None,
         session: Optional[Session] = None,
-        timeout: float = 10.0
+        timeout: float = 10.0,
     ):
         self.token = token
         self.chat_id = chat_id
@@ -40,10 +42,7 @@ class TelegramNotifier(Notifier):
 
         url = f"https://api.telegram.org/bot{self.token}/sendMessage"
 
-        params = {
-            "chat_id": self.chat_id,
-            "text": text
-        }
+        params = {"chat_id": self.chat_id, "text": text}
 
         response = self.session.post(
             url,
@@ -53,5 +52,3 @@ class TelegramNotifier(Notifier):
 
         # Raise exceptions for 4xx/5xx status codes
         response.raise_for_status()
-
-
