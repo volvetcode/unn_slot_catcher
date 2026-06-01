@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 import catcher.constants as const
-from catcher.notifier import Notifier, TelegramNotifier
+from catcher.notifier import Notifier
 
 # from selenium.webdriver.support.ui import WebDriverWait
 
@@ -37,7 +37,7 @@ class Catcher(webdriver.Chrome):
         # i don't know why but it did work a couple of times without a webdriver
         # better be safe than sorry
         if os.path.exists(driver_path):
-            logging.info(f"found ChromeDriver")
+            logging.info("found ChromeDriver")
         else:
             logging.critical(f"ChromeDriver not found at {driver_path}")
             raise FileNotFoundError(f"ChromeDriver not found at {driver_path}")
@@ -58,7 +58,7 @@ class Catcher(webdriver.Chrome):
         )
         options.add_argument("Accept-Language='en-GB,en;q=0.9'")
 
-        if self.teardown == True:
+        if self.teardown:
             logging.info("running in production mode")
             options.add_argument("--headless")
             options.add_argument("--no-sandbox")
@@ -98,14 +98,16 @@ class Catcher(webdriver.Chrome):
             if n_argv > 1:
                 try:
                     self.duration_hours = float(argv[1])
-                except:
+                except Exception as e:
+                    logging.warning(e)
                     logging.warning("invalid duration, using default 8 hours")
 
             if n_argv > 2:
                 try:
                     self.psych_index = int(argv[2])
                     self.psych = self.psychologists[self.psych_index]
-                except:
+                except Exception as e:
+                    logging.warning(e)
                     logging.warning(
                         "invalid psychologist, we will look for psychologist №0"
                     )
@@ -191,7 +193,7 @@ class Catcher(webdriver.Chrome):
     def search_for_a_slot(self, psychologist):
         logging.info(f"searching for {psychologist}")
         try:
-            slot = self.find_element(
+            self.find_element(
                 By.XPATH, f"//div[normalize-space(text())='{psychologist}']"
             )
             logging.info(f"found {psychologist}")
