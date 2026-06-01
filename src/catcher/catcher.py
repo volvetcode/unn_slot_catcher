@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 
 import catcher.constants as const
 from catcher.notifier import Notifier
+from catcher.config import Settings
 
 # from selenium.webdriver.support.ui import WebDriverWait
 
@@ -30,8 +31,9 @@ logger.handlers = [file_handler, stream_handler]
 
 
 class Catcher(webdriver.Chrome):
-    def __init__(self, notifier: Notifier, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
+    def __init__(self, settings: Settings, notifier: Notifier, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
         self.notifier = notifier
+        self.settings = settings
 
         logging.info("setting up...")
         # i don't know why but it did work a couple of times without a webdriver
