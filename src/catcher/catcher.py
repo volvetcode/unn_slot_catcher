@@ -31,7 +31,13 @@ logger.handlers = [file_handler, stream_handler]
 
 
 class Catcher(webdriver.Chrome):
-    def __init__(self, settings: Settings, notifier: Notifier, driver_path=const.CHROMEDRIVER_PATH, teardown=False):
+    def __init__(
+        self,
+        settings: Settings,
+        notifier: Notifier,
+        driver_path=const.CHROMEDRIVER_PATH,
+        teardown=False,
+    ):
         self.notifier = notifier
         self.settings = settings
 
@@ -123,17 +129,17 @@ class Catcher(webdriver.Chrome):
     def login(self):
         """
         Authenticate user with retry logic.
-        
+
         Has a 60 second delay in between retries.
         We need that because the website goes down when
-        psychologists update the slots 
+        psychologists update the slots
 
         Raises:
             Exception: if login fails after all retry attempts
-                or an unexpected error occurs 
+                or an unexpected error occurs
         """
         logging.info("Logging in...")
-        
+
         for attempt in range(1, self.retries + 1):
             try:
                 self._attempt_login()
@@ -145,7 +151,7 @@ class Catcher(webdriver.Chrome):
             except Exception as e:
                 logging.critical(f"Unexpected error on attempt №{attempt}: {e}")
                 raise Exception(f"Unexpected error: {e}")
-        
+
         logging.critical("Could not login after all retries")
         raise Exception("Couldn't login")
 
@@ -164,7 +170,7 @@ class Catcher(webdriver.Chrome):
         sleep(2)
         self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]").click()
         sleep(2)
-        
+
         # Verify login success by checking that the login button is gone
         with pytest.raises(NoSuchElementException):
             self.find_element(By.XPATH, "//button[span[text()='ВОЙТИ']]")
@@ -224,10 +230,10 @@ class Catcher(webdriver.Chrome):
     def monitor(self):
         """Main monitoring loop - handles login, searching, and reporting"""
         self.login()
-        
+
         found_slot = False
         time_start = time()
-        
+
         while (time() - time_start) < self.target_time:
             try:
                 self.refresh()
@@ -242,13 +248,13 @@ class Catcher(webdriver.Chrome):
                         break
             except Exception:
                 break
-            
+
             if self.search_for_a_slot(self.psych):
                 found_slot = True
                 break
-        
+
         self.make_report(self.psych, found_slot=found_slot)
-        
+
         total_time = (time() - time_start) / 60
         logging.info(
             f"Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {self.psych}"
