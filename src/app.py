@@ -1,9 +1,8 @@
 import logging
 import sys
 
-from catcher import Catcher
+from catcher import Catcher, TelegramNotifier
 from catcher.config import get_settings
-from catcher.notifier import TelegramNotifier
 
 
 def main() -> None:
@@ -15,12 +14,12 @@ def main() -> None:
     )
 
     try:
-        with Catcher(settings=settings, notifier=notifier, teardown=True) as bot:
+        with Catcher(settings=settings, notifier=notifier) as bot:
             bot.monitor()
     except Exception as e:
-        logging.error(f"Fatal error: {e}")
+        logging.error(f'Fatal error: {e}')
         sys.exit(1)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
