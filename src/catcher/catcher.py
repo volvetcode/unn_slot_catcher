@@ -133,8 +133,8 @@ class Catcher:
             psychologist_slot.click()
             logging.info(f'found {psychologist}')
             result = True
-        except NoSuchElementException:
-            logging.info(f"didn't find {psychologist}")
+        except (NoSuchElementException, TimeoutException):
+            pass
         except Exception as e:
             logging.error(
                 f'Unexpected error searching for {psychologist}: {e}', exc_info=True
