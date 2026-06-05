@@ -72,4 +72,4 @@ CHAT_ID=your_telegram_chat_id
 uv run python src/app.py
 ```
 
-Логи пишутся в папку `logs/`.
+Логи пишутся в формате JSON в папку `logs/`.
