@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 def default_log_path() -> str:
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    return str(Path('logs') / f'{timestamp}.json')
+    return str(Path('logs') / f'log-{timestamp}.json')
 
 
 class Settings(BaseSettings):  # type: ignore[misc]
