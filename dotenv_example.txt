@@ -1,5 +1,18 @@
 # the name of the file is supposed to be .env
-LOGIN=unn_login
-PASSWORD=unn_account_password
-TELEGRAM_TOKEN=your_cool_telegram_token
-CHAT_ID=your_telegram_chat_id
+LOGIN=
+PASSWORD=
+
+TELEGRAM_TOKEN=
+CHAT_ID=
+
+IS_PROD=TRUE
+CHROMEDRIVER_PATH=drivers/chromedriver
+TIME_TO_WAIT=15
+
+DURATION_HOURS=8
+ACTION_DELAY=2
+RETRIES=3
+RETRY_DELAY=60
+
+BASE_URL=https://psys.unn.ru/login
+PSYCHOLOGISTS=["Подшибихина Светлана Викторовна", "Галстян Полина Амаяковна", "Баринова Ольга Алексеевна", "Курзюкова Юлия Фёдоровна"]
