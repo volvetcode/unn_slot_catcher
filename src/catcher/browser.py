@@ -1,4 +1,5 @@
 import os
+import logging
 
 from selenium import webdriver
 
@@ -35,10 +36,14 @@ def configure_options(settings: Settings) -> webdriver.ChromeOptions:
 
 def create_driver(settings: Settings) -> webdriver.Chrome:
     if not os.path.exists(settings.chromedriver_path):
+        logging.error("Path to chromedriver doesn't exist")
         raise FileNotFoundError()
 
     options = configure_options(settings=settings)
-    driver = webdriver.Chrome(options=options)
+    service = webdriver.chrome.service.Service(
+        executable_path=settings.chromedriver_path
+    )
+    driver = webdriver.Chrome(service=service, options=options)
     driver.implicitly_wait(settings.time_to_wait)
 
     return driver
