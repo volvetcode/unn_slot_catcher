@@ -9,23 +9,34 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 
-from catcher.config import Settings
+from catcher.config import Settings, get_settings
 from catcher.browser import create_driver
 from catcher.logging_config import configure_logging
-from catcher.notifier import Notifier
+from catcher.notifier import Notifier, TelegramNotifier
 
 
 class Catcher:
     def __init__(
         self,
-        settings: Settings,
-        notifier: Notifier,
+        settings: Settings | None = None,
+        notifier: Notifier | None = None,
     ):
-        self.settings = settings
-        configure_logging(self.settings)
+        configure_logging()
+        logging.info("Logging configured")
+
+        try:
+            logging.info("Loading settings")
+            self.settings = settings or get_settings()
+        except Exception as e:
+            logging.error("Failed to log setting")
+            raise RuntimeError("Couldn't load settings. Check your .env file") from e
+        
         logging.info('setting up...')
         self.driver = create_driver(self.settings)
-        self.notifier = notifier
+        self.notifier = notifier or TelegramNotifier(
+                           token=self.settings.telegram_token,
+                           chat_id=self.settings.chat_id,
+                       )
         logging.info('finished setting up')
 
     def __enter__(self) -> 'Catcher':
@@ -64,7 +75,7 @@ class Catcher:
     def _login(self) -> None:
         """Authenticate user."""
         wait = WebDriverWait(self.driver, self.settings.time_to_wait)
-        self.driver.get(self.settings.base_url)
+        self.driver.get(str(self.settings.base_url))
 
         sleep(self.settings.action_delay)
         login_input = wait.until(

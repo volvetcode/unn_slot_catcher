@@ -1,20 +1,12 @@
 import logging
 import sys
 
-from catcher import Catcher, TelegramNotifier
-from catcher.config import get_settings
+from catcher import Catcher
 
 
 def main() -> None:
-    settings = get_settings()
-
-    notifier = TelegramNotifier(
-        token=settings.telegram_token,
-        chat_id=settings.chat_id,
-    )
-
     try:
-        with Catcher(settings=settings, notifier=notifier) as bot:
+        with Catcher() as bot:
             bot.monitor()
     except Exception as e:
         logging.error(f'Fatal error: {e}')

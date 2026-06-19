@@ -1,15 +1,7 @@
-from datetime import datetime
-from pathlib import Path
-
-from pydantic import Field
-
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import HttpUrl
 
-
-def default_log_path() -> str:
-    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    return str(Path('logs') / f'log-{timestamp}.json')
 
 
 class Settings(BaseSettings):  # type: ignore[misc]
@@ -35,9 +27,8 @@ class Settings(BaseSettings):  # type: ignore[misc]
     retry_delay: int
 
     # app constants
-    base_url: str
+    base_url: HttpUrl
     psychologists: list[str]
-    log_path: str = Field(default_factory=default_log_path)
 
 
 @lru_cache

@@ -1,7 +1,9 @@
 import json
 import logging
 
-from catcher.config import Settings
+from datetime import datetime
+from pathlib import Path
+
 
 
 class JsonFormatter(logging.Formatter):
@@ -19,11 +21,14 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(log_record, ensure_ascii=False)
 
 
-def configure_logging(settings: Settings) -> None:
+def configure_logging() -> None:
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(settings.log_path, mode='w', encoding='utf-8')
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    log_path = str(Path('logs') / f'log-{timestamp}.json')
+
+    file_handler = logging.FileHandler(log_path, mode='w', encoding='utf-8')
     file_handler.setFormatter(JsonFormatter())
 
     logger.handlers = [file_handler]
