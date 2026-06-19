@@ -32,17 +32,17 @@ class TelegramNotifier(Notifier):
         self.timeout = timeout
 
         if not self.token:
-            raise ValueError("TELEGRAM_TOKEN is required")
+            raise ValueError('TELEGRAM_TOKEN is required')
 
         if not self.chat_id:
-            raise ValueError("CHAT_ID is required")
+            raise ValueError('CHAT_ID is required')
 
     def send(self, text: str) -> None:
         """Send a message via telegram bot"""
 
-        url = f"https://api.telegram.org/bot{self.token}/sendMessage"
+        url = f'https://api.telegram.org/bot{self.token}/sendMessage'
 
-        params = {"chat_id": self.chat_id, "text": text}
+        params = {'chat_id': self.chat_id, 'text': text}
 
         response = self.session.post(
             url,

@@ -1,16 +1,16 @@
 import logging
-from time import sleep, time
 from functools import wraps
-from typing import Any
+from time import sleep, time
 from types import TracebackType
+from typing import Any
 
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
-from catcher.config import Settings, get_settings
 from catcher.browser import create_driver
+from catcher.config import Settings, get_settings
 from catcher.logging_config import configure_logging
 from catcher.notifier import Notifier, TelegramNotifier
 
@@ -22,21 +22,21 @@ class Catcher:
         notifier: Notifier | None = None,
     ):
         configure_logging()
-        logging.info("Logging configured")
+        logging.info('Logging configured')
 
         try:
-            logging.info("Loading settings")
+            logging.info('Loading settings')
             self.settings = settings or get_settings()
         except Exception as e:
-            logging.error("Failed to log setting")
+            logging.error('Failed to log setting')
             raise RuntimeError("Couldn't load settings. Check your .env file") from e
-        
+
         logging.info('setting up...')
         self.driver = create_driver(self.settings)
         self.notifier = notifier or TelegramNotifier(
-                           token=self.settings.telegram_token,
-                           chat_id=self.settings.chat_id,
-                       )
+            token=self.settings.telegram_token,
+            chat_id=self.settings.chat_id,
+        )
         logging.info('finished setting up')
 
     def __enter__(self) -> 'Catcher':
@@ -181,5 +181,6 @@ class Catcher:
 
         total_time = (time() - time_start) / 60
         logging.info(
-            f'Statistics: runtime={total_time:.0f}mins, slot_found={found_slot} for {self.settings.psychologists[0]}'
+            f'Statistics: runtime={total_time:.0f}mins, '
+            f'slot_found={found_slot} for {psychologist}'
         )

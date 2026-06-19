@@ -1,9 +1,7 @@
 import json
 import logging
-
 from datetime import datetime
 from pathlib import Path
-
 
 
 class JsonFormatter(logging.Formatter):

@@ -6,5 +6,6 @@ indent-width = 4
 quote-style = "single"
 
 [lint]
+select = ["E", "F", "I"]
 fixable = ["ALL"]
 unfixable = []
