@@ -1,8 +1,10 @@
 import logging
+from datetime import datetime, timedelta
 from functools import wraps
-from time import sleep, time
+from time import sleep
 from types import TracebackType
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
@@ -13,6 +15,8 @@ from catcher.browser import create_driver
 from catcher.config import Settings, get_settings
 from catcher.logging_config import configure_logging
 from catcher.notifier import Notifier, TelegramNotifier
+
+MOSCOW_TZ = ZoneInfo('Europe/Moscow')
 
 
 class Catcher:
@@ -71,7 +75,7 @@ class Catcher:
 
         return decorator
 
-    @retry_action('Login')  # type: ignore[misc]
+    @retry_action('Login')
     def _login(self) -> None:
         """Authenticate user."""
         wait = WebDriverWait(self.driver, self.settings.time_to_wait)
@@ -108,7 +112,7 @@ class Catcher:
         self.driver.refresh()
         logging.info('Refreshed the schedule')
 
-    @retry_action('Next page')  # type: ignore[misc]
+    @retry_action('Next page')
     def _next_page(self) -> None:
         """Go to next page in calendar"""
         wait = WebDriverWait(self.driver, self.settings.time_to_wait)
@@ -154,7 +158,8 @@ class Catcher:
 
     def _send_report(self, psychologist: str, found_slot: bool) -> None:
         if found_slot:
-            message = f'{psychologist} открыла слот. Бегом записываться!'
+            found_at = datetime.now(MOSCOW_TZ).strftime('%H:%M:%S')
+            message = f'{psychologist} открыла слот в {found_at}. Бегом записываться!'
         else:
             message = f'{psychologist} не открыла слот'
             logging.warning("couldn't find a psychologist")
@@ -165,12 +170,12 @@ class Catcher:
         """Main monitoring loop."""
 
         psychologist = self.settings.psychologists[0]
-        time_start = time()
-        target_time = self.settings.duration_hours * 60 * 60
+        time_start = datetime.now(MOSCOW_TZ)
+        target_time = time_start + timedelta(hours=self.settings.duration_hours)
 
         self._login()
         found_slot = False
-        while (time() - time_start) < target_time:
+        while datetime.now(MOSCOW_TZ) < target_time:
             self._open_schedule_page()
             found_slot = self._search_for_a_slot(psychologist)
 
@@ -179,8 +184,9 @@ class Catcher:
 
         self._send_report(psychologist, found_slot)
 
-        total_time = (time() - time_start) / 60
+        total_time = datetime.now(MOSCOW_TZ) - time_start
+        total_minutes = total_time.total_seconds() / 60
         logging.info(
-            f'Statistics: runtime={total_time:.0f}mins, '
+            f'Statistics: runtime={total_minutes:.1f}mins, '
             f'slot_found={found_slot} for {psychologist}'
         )
