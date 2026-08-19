@@ -3,7 +3,7 @@ name = "unn-slot-catcher"
 version = "0.1.0"
 description = "A simple bot that helps to get a slot with a psychologist at Lobachevsky University"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 authors = [{ name = "Savely Antonov", email = "savelytest@yandex.ru" }]
 license = { file = "LICENSE" }
 dependencies = [
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.14"
 check_untyped_defs = true
 disallow_untyped_defs = false
 disallow_untyped_decorators = false
