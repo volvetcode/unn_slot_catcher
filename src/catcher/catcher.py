@@ -56,26 +56,23 @@ class Catcher:
         self.driver.quit()
 
     @staticmethod
-    def retry_action(action_name: str) -> Any:
-        def decorator(func: Any) -> Any:
-            @wraps(func)
-            def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
-                for attempt in range(1, self.settings.retries + 1):
-                    try:
-                        result = func(self, *args, **kwargs)
-                        logging.info(f'{action_name} succeeded on attempt №{attempt}')
-                        return result
-                    except (NoSuchElementException, TimeoutException):
-                        logging.warning(f'{action_name} failed. Attempt №{attempt}')
-                        sleep(self.settings.retry_delay)
+    def retry(func: Any) -> Any:
+        @wraps(func)
+        def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+            for attempt in range(1, self.settings.retries + 1):
+                try:
+                    result = func(self, *args, **kwargs)
+                    logging.info(f'{func.__name__} succeeded on attempt №{attempt}')
+                    return result
+                except (NoSuchElementException, TimeoutException):
+                    logging.warning(f'{func.__name__} failed. Attempt №{attempt}')
+                    sleep(self.settings.retry_delay)
 
-                raise Exception(f'{action_name} failed after all retries')
+            raise Exception(f'{func.__name__} failed after all retries')
 
-            return wrapper
+        return wrapper
 
-        return decorator
-
-    @retry_action('Login')
+    @retry
     def _login(self) -> None:
         """Authenticate user."""
         wait = WebDriverWait(self.driver, self.settings.time_to_wait)
@@ -112,7 +109,7 @@ class Catcher:
         self.driver.refresh()
         logging.info('Refreshed the schedule')
 
-    @retry_action('Next page')
+    @retry
     def _next_page(self) -> None:
         """Go to next page in calendar"""
         wait = WebDriverWait(self.driver, self.settings.time_to_wait)
