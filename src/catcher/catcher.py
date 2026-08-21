@@ -59,13 +59,14 @@ class Catcher:
     def retry(func: Any) -> Any:
         @wraps(func)
         def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+            name = func.__name__.strip('_').title()
             for attempt in range(1, self.settings.retries + 1):
                 try:
                     result = func(self, *args, **kwargs)
-                    logging.info(f'{func.__name__} succeeded on attempt №{attempt}')
+                    logging.info(f'{name} succeeded on attempt №{attempt}')
                     return result
                 except (NoSuchElementException, TimeoutException):
-                    logging.warning(f'{func.__name__} failed. Attempt №{attempt}')
+                    logging.warning(f'{name} failed. Attempt №{attempt}')
                     sleep(self.settings.retry_delay)
 
             raise Exception(f'{func.__name__} failed after all retries')
