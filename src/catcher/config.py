@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 
 from pydantic import HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -31,6 +31,6 @@ class Settings(BaseSettings):  # type: ignore[misc]
     psychologists: list[str]
 
 
-@lru_cache
+@cache
 def get_settings() -> Settings:
     return Settings()  # pyright: ignore[reportCallIssue]
