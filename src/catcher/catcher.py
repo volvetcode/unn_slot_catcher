@@ -146,10 +146,6 @@ class Catcher:
             psychologist_slot.click()
             logging.info(f'found {psychologist}')
             result = True
-        except NoSuchElementException:
-            logging.debug(
-                f'No Such Element Exception when searching for {psychologist}'
-            )
         except TimeoutException:
             logging.debug(f'Timeout Exception when searching for {psychologist}')
         except Exception as e:
