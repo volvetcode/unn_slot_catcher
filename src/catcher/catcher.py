@@ -147,7 +147,8 @@ class Catcher:
             logging.info(f'found {psychologist}')
             result = True
         except TimeoutException:
-            logging.debug(f'Timeout Exception when searching for {psychologist}')
+            # No available slot is the expected/default state.
+            pass
         except Exception as e:
             logging.error(
                 f'Unexpected error searching for {psychologist}: {e}', exc_info=True
